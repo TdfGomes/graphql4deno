@@ -16,9 +16,11 @@ export type GraphQLParams = {
   operationName?: string;
 };
 
-export type Otpions = {
-  contextValue?: any
-  operationName?: any
+export interface Otpions {
+  schema:any;
+  rootValue?: any;
+  context?: any;
+  resolvers?: any;
 }
 
 

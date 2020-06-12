@@ -1,19 +1,18 @@
 import type {
   ServerRequest,
 } from "https://deno.land/std/http/server.ts";
-import type { GraphQLOptions, GraphQLParams } from "./graphql.d.ts";
+import type { GraphQLParams, Otpions } from "./graphql.d.ts";
 
 import { decode } from "https://deno.land/std/encoding/utf8.ts";
 import encodeBody from '../utils.ts'
 import {
+  makeExecutableSchema,
   Source,
   parse,
   validate,
   validateSchema,
   execute,
-  syntaxError,
 } from "../deps.ts";
-
 
 export async function getGraphQLParams(req: ServerRequest): Promise<GraphQLParams> {
   const typeInfo: any = req.headers.get("content-type");
@@ -32,7 +31,7 @@ export async function getGraphQLParams(req: ServerRequest): Promise<GraphQLParam
     throw req.respond({ status: 400, body: "Must provide a query string" });
   }
 
-  console.log("\x1b[31m", "===========> PARAMS", params);
+  console.log("\x1b[36m", "===========> PARAMS", params);
   return params;
 }
 
@@ -55,11 +54,12 @@ export function schemaValidation(
     }
     throw req.respond({ status: 400, body:  encodeBody(body)});
   }
-
-  const errorMessages = validate(schema, documentAST as any);
+  console.log("\x1b[36m","====>documentAST_2",documentAST)
   
+  const errorMessages = validate(schema, documentAST as any);
+  console.log("\x1b[36m","====>ERRRORR",errorMessages)
   if (errorMessages.length) {
-    console.log("\x1b[41m","Syntax Error");
+    console.log("\x1b[31m","Syntax Error");
     errors.push(errorMessages)
     const body = {
       data:{},
@@ -70,7 +70,7 @@ export function schemaValidation(
   
   const schemaValidationErrors = validateSchema(schema);
   if (schemaValidationErrors.length) {
-    console.log("\x1b[41m", "GraphQL schema validation error.");
+    console.log("\x1b[31m", "GraphQL schema validation error.");
     errors.push(schemaValidationErrors);
     const body = {
       data: {},
@@ -78,32 +78,36 @@ export function schemaValidation(
     };
     throw req.respond({ status: 500, body: encodeBody(body) });
   }
-
+  
   return documentAST;
 }
 
 async function executeGraphql(
   req: ServerRequest,
-  options: GraphQLOptions,
-): Promise<any> {
-  let result;
-  const params = await getGraphQLParams(req);
-  const document = schemaValidation(params, options.schema, req);
+  options: Otpions,
+  ): Promise<any> {
+    let result;
+    const params = await getGraphQLParams(req);
+    const schema = options.schema.kind !== 'Document' ? options.schema : makeExecutableSchema({typeDefs:options.schema,resolvers:options.resolvers, })
+    const document = schemaValidation(params, schema, req);
 
   if (!document) {
     return;
   }
 
   try {
-    result = await execute({
-      schema:options.schema,
+    result = await execute(
+      schema,
       document,
-      rootValue: "",
-      contextValue: options.contextValue ?? req,
-      variableValues: params.variables,
-      operationName: params.operationName,
-    });
+      options.rootValue,
+      options.context ?? req,
+      params.variables,
+      params.operationName,
+      null,
+      null,
+    );
   } catch (error) {
+    console.log("\x1b[31m", "GraphQL execution context error.");
     const body = {
       data: {},
       errors:[{
