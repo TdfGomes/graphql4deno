@@ -1,14 +1,10 @@
 import type { ServerRequest, HTTPOptions } from "https://deno.land/std/http/server.ts";
 import type { GraphQLOptions } from './graphql/graphql.d.ts'
 
-import { listenAndServe } from "https://deno.land/std/http/server.ts";
-import { encode } from "https://deno.land/std/encoding/utf8.ts"
+import { listenAndServe } from "https://deno.land/std/http/server.ts"
 
+import encodeBody from './utils.ts'
 import  executeGraphql from "./graphql/mod.ts";
-
-function encodeBody(body: object) {
-  return encode(JSON.stringify(body));
-}
 
 export default function graphqlHttp(addr: string | HTTPOptions, path: string, options: GraphQLOptions):any{
 
@@ -19,19 +15,20 @@ export default function graphqlHttp(addr: string | HTTPOptions, path: string, op
     if (req.url !== path) {
       return req.respond({status:404, body:'Route not Found!'}) 
     }
-  
-    const result = await executeGraphql(req,options);
-    console.log("\x1b[32m", "===========> RESULT", result);
-    const body = encodeBody(result);
+    try {
+      const result = await executeGraphql(req,options);
+      console.log("\x1b[32m", "===========> RESULT", result);
+      const body = encodeBody(result);
+      return req.respond({
+        status:200,
+        headers: new Headers({
+          'content-type': 'application/json',
+          'content-length': String(body.length)
+        }),
+        body
+      })
+    } catch{}
     
-    return req.respond({
-      status:200,
-      headers: new Headers({
-        'content-type': 'application/json',
-        'content-length': String(body.length)
-      }),
-      body
-    })
   
   }
   
