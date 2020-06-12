@@ -15,3 +15,10 @@ My goal with this was to have a simple dedicated http server to run GraphQL, no 
 
 For sure this list will be bigger.
 If you see a bug or wanted to see an extra feature here open an issue or a pull request. I will be more than happy to have help.
+
+### Thank you
+
+- [Alex Loberta](https://github.com/FranciscoMCG): For your mentorship
+- [Francisco Gomes](https://github.com/FranciscoMCG): For your help teaching me typescript
+- [João Tiago](https://www.linkedin.com/in/joaosilvatiago/): For your patience, guidance and encouraging me
+- [Diego Braga](https://github.com/dsbrgg): For allways sharing new tech geek stuff with me
