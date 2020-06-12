@@ -8,7 +8,8 @@ My goal with this was to have a simple dedicated http server to run GraphQL, no 
 
 ## TODO
 
-- [ ] Check
+- [x] Error Handling
+- [ ] Improve Typescritp
 - [ ] **Add tests !!!**
 - 🤔
 
