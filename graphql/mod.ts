@@ -1,11 +1,12 @@
 import type {
   ServerRequest,
 } from "https://deno.land/std/http/server.ts";
-import type { GraphQLParams, Otpions } from "./graphql.d.ts";
+import type { GraphQLParams, Options } from "./graphql.d.ts";
 
 import { decode } from "https://deno.land/std/encoding/utf8.ts";
 import encodeBody from '../utils.ts'
 import {
+  IExecutableSchemaDefinition,
   makeExecutableSchema,
   parse,
   validate,
@@ -35,11 +36,12 @@ export async function getGraphQLParams(req: ServerRequest): Promise<GraphQLParam
 
 export function schemaValidation(
   params: GraphQLParams,
-  schema: any,
+  schema:any,
   req: ServerRequest,
-): any {
+) {
   let documentAST;
   const errors=[]
+  
   try {
     documentAST = parse(params.query, {});
   } catch (e) {
@@ -51,11 +53,11 @@ export function schemaValidation(
     throw req.respond({ status: 400, body:  encodeBody(body)});
   }
   
-  const errorMessages = validate(schema, documentAST as any);
+  const errorMessages = validate(schema, documentAST);
   
   if (errorMessages.length) {
   
-    errors.push(errorMessages)
+    errors.push(...errorMessages)
     const body = {
       data:{},
       errors
@@ -66,7 +68,7 @@ export function schemaValidation(
   const schemaValidationErrors = validateSchema(schema);
   if (schemaValidationErrors.length) {
     
-    errors.push(schemaValidationErrors);
+    errors.push(...schemaValidationErrors);
     const body = {
       data: {},
       errors,
@@ -79,11 +81,11 @@ export function schemaValidation(
 
 async function executeGraphql(
   req: ServerRequest,
-  options: Otpions,
+  options: Options,
   ): Promise<any> {
     let result;
     const params = await getGraphQLParams(req);
-    const schema = options.schema.kind !== 'Document' ? options.schema : makeExecutableSchema({typeDefs:options.schema, resolvers:options.resolvers } as any)
+    const schema = options.schema.kind !== 'Document' ? options.schema : makeExecutableSchema({typeDefs:options.schema, resolvers:options.resolvers } as IExecutableSchemaDefinition)
     const document = schemaValidation(params, schema, req);
 
   if (!document) {

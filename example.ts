@@ -20,35 +20,35 @@ import gql from "https://raw.githubusercontent.com/davidmwhynot/graphql-tag-deno
 //     },
 //   },
 // });
+
 // graphqlHttp({ port: 8080 }, "/graphql", { schema });
 
-// const schema = new GraphQLSchema({
-//   query: new GraphQLObjectType({
-//     name: "Query",
-//     fields: {
-//       hello: {
-//         type: GraphQLString,
-//         resolve: (_obj, _args, context) => {
-//           console.log({ _obj, _args, context });
-//           return "Hello world";
-//         },
-//       },
-//     },
-//   }),
-// });
-// graphqlHttp({ port: 8080 }, "/graphql", { schema });
+const schema = new GraphQLSchema({
+  query: new GraphQLObjectType({
+    name: "Query",
+    fields: {
+      greeting: {
+        type: GraphQLString,
+        resolve: (_obj, _args, context) => {
+          return "Hello world";
+        },
+      },
+    },
+  }),
+});
+graphqlHttp({ port: 8080 }, "/graphql", { schema });
 
 
-const schema = gql`
-	type Query {
-     greeting: String
-  }
-`;
+// const schema = gql`
+// 	type Query {
+//      greeting: String
+//   }
+// `;
 
-const resolvers = {
-  Query: {
-    greeting: () => "Hello World",
-  },
-}
+// const resolvers = {
+//   Query: {
+//     greeting: () => "Hello World",
+//   },
+// }
 
-graphqlHttp({ port: 8080 }, "/graphql", { schema, resolvers });
+// graphqlHttp({ port: 8080 }, "/graphql", { schema, resolvers });

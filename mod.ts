@@ -1,12 +1,12 @@
 import type { ServerRequest, HTTPOptions } from "https://deno.land/std/http/server.ts";
-import type { Otpions } from './graphql/graphql.d.ts'
+import type { Options } from './graphql/graphql.d.ts'
 
 import { listenAndServe } from "https://deno.land/std/http/server.ts"
 
 import encodeBody from './utils.ts'
 import  executeGraphql from "./graphql/mod.ts";
 
-export default function graphqlHttp(addr: string | HTTPOptions, path: string, options: Otpions):any{
+export default function graphqlHttp(addr: string | HTTPOptions, path: string, options: Options):void{
 
   async function handler(req: ServerRequest):Promise<void>{
     if (req.method !== 'POST' && req.method !== 'GET') {

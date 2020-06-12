@@ -1,13 +1,11 @@
-
-
 export type GraphQLOptions = {
   schema: any;
   contextValue?: any;
   rootValue?: any;
-  variableValues?:any;
-  operationName?: any;
-  fieldResolver?: any;
-  typeResolver?: any;
+  variableValues?:object;
+  operationName?: string;
+  fieldResolver?: () => any;
+  typeResolver?: () => any;
 };
 
 export type GraphQLParams = {
@@ -16,13 +14,12 @@ export type GraphQLParams = {
   operationName?: string;
 };
 
-export interface Otpions {
+export interface Options {
   schema:any;
   rootValue?: any;
   context?: any;
   resolvers?: any;
 }
-
 
 
 export type ServerContext<T> = T;
