@@ -7,7 +7,6 @@ import { decode } from "https://deno.land/std/encoding/utf8.ts";
 import encodeBody from '../utils.ts'
 import {
   makeExecutableSchema,
-  Source,
   parse,
   validate,
   validateSchema,
@@ -31,7 +30,6 @@ export async function getGraphQLParams(req: ServerRequest): Promise<GraphQLParam
     throw req.respond({ status: 400, body: "Must provide a query string" });
   }
 
-  console.log("\x1b[36m", "===========> PARAMS", params);
   return params;
 }
 
@@ -41,25 +39,22 @@ export function schemaValidation(
   req: ServerRequest,
 ): any {
   let documentAST;
-  const source = new Source(params.query);
   const errors=[]
   try {
-    documentAST = parse(source, {});
-  } catch (errors) {
-    console.log("\x1b[31m", "Graphql syntax error");
-    errors.pus(errors)
+    documentAST = parse(params.query, {});
+  } catch (e) {
+    errors.push(e)
     const body = {
       data:{},
       errors
     }
     throw req.respond({ status: 400, body:  encodeBody(body)});
   }
-  console.log("\x1b[36m","====>documentAST_2",documentAST)
   
   const errorMessages = validate(schema, documentAST as any);
-  console.log("\x1b[36m","====>ERRRORR",errorMessages)
+  
   if (errorMessages.length) {
-    console.log("\x1b[31m","Syntax Error");
+  
     errors.push(errorMessages)
     const body = {
       data:{},
@@ -70,7 +65,7 @@ export function schemaValidation(
   
   const schemaValidationErrors = validateSchema(schema);
   if (schemaValidationErrors.length) {
-    console.log("\x1b[31m", "GraphQL schema validation error.");
+    
     errors.push(schemaValidationErrors);
     const body = {
       data: {},
@@ -88,7 +83,7 @@ async function executeGraphql(
   ): Promise<any> {
     let result;
     const params = await getGraphQLParams(req);
-    const schema = options.schema.kind !== 'Document' ? options.schema : makeExecutableSchema({typeDefs:options.schema,resolvers:options.resolvers, })
+    const schema = options.schema.kind !== 'Document' ? options.schema : makeExecutableSchema({typeDefs:options.schema, resolvers:options.resolvers } as any)
     const document = schemaValidation(params, schema, req);
 
   if (!document) {
@@ -107,7 +102,7 @@ async function executeGraphql(
       null,
     );
   } catch (error) {
-    console.log("\x1b[31m", "GraphQL execution context error.");
+    
     const body = {
       data: {},
       errors:[{

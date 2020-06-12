@@ -17,7 +17,7 @@ export default function graphqlHttp(addr: string | HTTPOptions, path: string, op
     }
     try {
       const result = await executeGraphql(req,options);
-      console.log("\x1b[32m", "===========> RESULT", result);
+      
       const body = encodeBody(result);
       return req.respond({
         status:200,
