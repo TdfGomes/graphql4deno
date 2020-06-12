@@ -6,6 +6,79 @@ My goal with this was to have a simple dedicated http server to run GraphQL, no 
 
 >This is heavily on development so the design and some decisions can change, still in progress...
 
+## How to use
+```javascript
+import graphqlHttp from 'https://raw.githubusercontent.com/TdfGomes/graphql4deno/master/mod.ts'
+
+import { 
+  GraphQLSchema,
+  GraphQLObjectType,
+  GraphQLString } from "https://cdn.pika.dev/graphql@^15.0.0";
+
+const schema = new GraphQLSchema({
+  query: new GraphQLObjectType({
+    name: "Query",
+    fields: {
+      greeting: {
+        type: GraphQLString,
+        resolve: (_obj, _args, context) => {
+          return "Hello world";
+        },
+      },
+    },
+  }),
+});
+
+graphqlHttp({ port: 8080 }, "/graphql", { schema });
+```
+
+You can also do like this:
+
+```javascript
+import graphqlHttp from 'https://raw.githubusercontent.com/TdfGomes/graphql4deno/master/mod.ts'
+import { makeExecutableSchema } from "https://raw.githubusercontent.com/TdfGomes/graphql4deno/master/deps.ts";
+
+const schema = makeExecutableSchema({
+  typeDefs: `
+    type Query {
+      greeting: String
+    }
+  `,
+  resolvers: {
+    Query: {
+      greeting: () => "Hello World",
+    },
+  },
+});
+
+graphqlHttp({ port: 8080 }, "/graphql", { schema });
+```
+
+or even like this:
+
+```javascript
+import graphqlHttp from 'https://raw.githubusercontent.com/TdfGomes/graphql4deno/master/mod.ts'
+import gql from "https://raw.githubusercontent.com/davidmwhynot/graphql-tag-deno/master/mod.ts";
+
+const schema = gql`
+	type Query {
+     greeting: String
+  }
+`;
+
+const resolvers = {
+  Query: {
+    greeting: () => "Hello World",
+  },
+}
+
+graphqlHttp({ port: 8080 }, "/graphql", { schema, resolvers });
+```
+
+To run this from the you will need to use the `allow-net` flag (e.g `deno run --allow-net example`)
+
+------
+
 ## TODO
 
 - [x] Error Handling
@@ -15,6 +88,8 @@ My goal with this was to have a simple dedicated http server to run GraphQL, no 
 
 For sure this list will be bigger.
 If you see a bug or wanted to see an extra feature here open an issue or a pull request. I will be more than happy to have help.
+
+------
 
 ### Thank you
 
