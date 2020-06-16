@@ -82,8 +82,9 @@ To run this from the you will need to use the `allow-net` flag (e.g `deno run --
 ## TODO
 
 - [x] Error Handling
-- [ ] Improve Typescript
 - [ ] **Add tests !!!**
+- [ ] Improve Typescript
+- [ ] Add Graphql Subscriptions
 - 🤔
 
 For sure this list will be bigger.
