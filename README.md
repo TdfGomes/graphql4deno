@@ -95,7 +95,7 @@ If you see a bug or wanted to see an extra feature here open an issue or a pull 
 
 ### Thank you
 
-- [Alex Loberta](https://github.com/alexlbr): For your mentorship
+- [Alex Lobera](https://github.com/alexlbr): For your mentorship
 - [Francisco Gomes](https://github.com/FranciscoMCG): For your help teaching me typescript
 - [João Tiago](https://www.linkedin.com/in/joaosilvatiago/): For your patience, guidance and encouraging me
 - [Diego Braga](https://github.com/dsbrgg): For allways sharing new tech geek stuff with me
