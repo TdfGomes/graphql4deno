@@ -1,8 +1,8 @@
 import graphqlHttp from "../mod.ts";
 
 import {
-  GraphQLSchema,
   GraphQLObjectType,
+  GraphQLSchema,
   GraphQLString,
 } from "https://cdn.pika.dev/graphql@^15.0.0";
 
