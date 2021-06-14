@@ -1,9 +1,9 @@
 import type {
   ServerRequest,
-} from "https://deno.land/std/http/server.ts";
+} from "https://deno.land/std@0.98.0/http/server.ts";
 import type { GraphQLParams, Options } from "./graphql.d.ts";
 
-import { decode } from "https://deno.land/std/encoding/utf8.ts";
+import { decode } from "https://deno.land/std@0.98.0/encoding/base64.ts";
 import encodeBody from '../utils.ts'
 import {
   IExecutableSchemaDefinition,
