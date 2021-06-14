@@ -3,6 +3,7 @@ import type {
 } from "https://deno.land/std@0.98.0/http/server.ts";
 import type { GraphQLParams, Options } from "./graphql.d.ts";
 
+import { readAll } from 'https://deno.land/std@0.98.0/io/util.ts'
 import { decode } from "https://deno.land/std@0.98.0/encoding/base64.ts";
 import encodeBody from "../utils.ts";
 import {
@@ -25,7 +26,7 @@ export async function getGraphQLParams(
     return { query: req.body };
   }
 
-  const bufferContent: Uint8Array = await Deno.readAll(req.body);
+  const bufferContent: Uint8Array = await readAll(req.body);
   const decodedContent: string = decode(bufferContent);
   const params: GraphQLParams = JSON.parse(decodedContent);
 
