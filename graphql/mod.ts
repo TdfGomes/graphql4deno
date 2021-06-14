@@ -4,17 +4,19 @@ import type {
 import type { GraphQLParams, Options } from "./graphql.d.ts";
 
 import { decode } from "https://deno.land/std@0.98.0/encoding/base64.ts";
-import encodeBody from '../utils.ts'
+import encodeBody from "../utils.ts";
 import {
+  execute,
   IExecutableSchemaDefinition,
   makeExecutableSchema,
   parse,
   validate,
   validateSchema,
-  execute,
 } from "../deps.ts";
 
-export async function getGraphQLParams(req: ServerRequest): Promise<GraphQLParams> {
+export async function getGraphQLParams(
+  req: ServerRequest,
+): Promise<GraphQLParams> {
   const typeInfo: any = req.headers.get("content-type");
 
   if (
@@ -36,38 +38,36 @@ export async function getGraphQLParams(req: ServerRequest): Promise<GraphQLParam
 
 export function schemaValidation(
   params: GraphQLParams,
-  schema:any,
+  schema: any,
   req: ServerRequest,
 ) {
   let documentAST;
-  const errors=[]
-  
+  const errors = [];
+
   try {
     documentAST = parse(params.query, {});
   } catch (e) {
-    errors.push(e)
+    errors.push(e);
     const body = {
-      data:{},
-      errors
-    }
-    throw req.respond({ status: 400, body:  encodeBody(body)});
+      data: {},
+      errors,
+    };
+    throw req.respond({ status: 400, body: encodeBody(body) });
   }
-  
+
   const errorMessages = validate(schema, documentAST);
-  
+
   if (errorMessages.length) {
-  
-    errors.push(...errorMessages)
+    errors.push(...errorMessages);
     const body = {
-      data:{},
-      errors
-    }
-    throw req.respond({status:400,body:encodeBody(body)})
+      data: {},
+      errors,
+    };
+    throw req.respond({ status: 400, body: encodeBody(body) });
   }
-  
+
   const schemaValidationErrors = validateSchema(schema);
   if (schemaValidationErrors.length) {
-    
     errors.push(...schemaValidationErrors);
     const body = {
       data: {},
@@ -75,18 +75,25 @@ export function schemaValidation(
     };
     throw req.respond({ status: 500, body: encodeBody(body) });
   }
-  
+
   return documentAST;
 }
 
 async function executeGraphql(
   req: ServerRequest,
   options: Options,
-  ): Promise<any> {
-    let result;
-    const params = await getGraphQLParams(req);
-    const schema = options.schema.kind !== 'Document' ? options.schema : makeExecutableSchema({typeDefs:options.schema, resolvers:options.resolvers } as IExecutableSchemaDefinition)
-    const document = schemaValidation(params, schema, req);
+): Promise<any> {
+  let result;
+  const params = await getGraphQLParams(req);
+  const schema = options.schema.kind !== "Document"
+    ? options.schema
+    : makeExecutableSchema(
+      {
+        typeDefs: options.schema,
+        resolvers: options.resolvers,
+      } as IExecutableSchemaDefinition,
+    );
+  const document = schemaValidation(params, schema, req);
 
   if (!document) {
     return;
@@ -104,16 +111,15 @@ async function executeGraphql(
       null,
     );
   } catch (error) {
-    
     const body = {
       data: {},
-      errors:[{
-        message:"GraphQL execution context error."
-      }]
-    }
-    throw req.respond({ status: 400, body:  encodeBody(body)});
+      errors: [{
+        message: "GraphQL execution context error.",
+      }],
+    };
+    throw req.respond({ status: 400, body: encodeBody(body) });
   }
   return result;
 }
 
-export default executeGraphql
+export default executeGraphql;
